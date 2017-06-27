@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Pong</title>
+	<style>
+    	{ padding: 0; margin: 0; } canvas { background: #eee; display: block; margin: 0 auto; }
+  	</style>
+</head>
+<body>
+
+<canvas id="MyCanvas" width="480" height="320"></canvas>
+
+<script>
+
+	// Canvas
+
+	var canvas = document.getElementById("MyCanvas");
+	var ctx = canvas.getContext("2d");
+	var x = canvas.width / 2;
+	var y = canvas.height / 2;
+
+	// Paddle
+
+	paddleWidth = 10;
+	paddleHeight = 50;
+
+	// Left Paddle
+	
+	var paddleLeftX = 20;
+	var paddleLeftY = (canvas.height - paddleHeight) / 2;
+	var paddleLeftUpPressed = false;
+	var paddleLeftDownPressed = false;
+
+	// Right Paddle
+
+	var paddleRightX = canvas.width - (20 + paddleWidth);
+	var paddleRightY = (canvas.height - paddleHeight) / 2;
+	var paddleRightUpPressed = false;
+	var paddleRightDownPressed = false;
+
+	// Ball
+
+	var ballRadius = 7.5;
+	var dx = 2;
+	var dy = 2;
+
+	// Constructors
+
+	function drawLeftPaddle() {
+		ctx.beginPath();
+		ctx.rect(paddleLeftX, paddleLeftY, paddleWidth, paddleHeight);
+		ctx.fillStyle = '#0095DD';
+		ctx.fill();
+		ctx.closePath();
+	}
+
+	function drawRightPaddle() {
+		ctx.beginPath();
+		ctx.rect(paddleRightX, paddleRightY, paddleWidth, paddleHeight);
+		ctx.fillStyle = '#0095DD';
+		ctx.fill();
+		ctx.closePath();
+	}
+
+	function drawBall() {
+		ctx.beginPath();
+		ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+		ctx.fillStyle = '#0095DD';
+		ctx.fill();
+		ctx.closePath();
+	}
+
+	// Event Triggers 
+
+	document.addEventListener("keydown", keyDownHandler, false);
+	document.addEventListener("keyup", keyUpHandler, false);
+
+	// Paddle Controllers
+
+	function keyDownHandler(e) {
+		if (e.keyCode == 87) {
+			paddleLeftUpPressed = true;
+		}
+		else if (e.keyCode == 83) {
+			paddleLeftDownPressed = true;
+		}
+		if (e.keyCode == 38) {
+			paddleRightUpPressed = true;
+		}
+		else if (e.keyCode == 40) {
+			paddleRightDownPressed = true;
+		}
+	}
+
+	function keyUpHandler(e) {
+		if (e.keyCode == 87) {
+			paddleLeftUpPressed = false;
+		}
+		else if (e.keyCode == 83) {
+			paddleLeftDownPressed = false;
+		}
+		if (e.keyCode == 38) {
+			paddleRightUpPressed = false;
+		}
+		else if (e.keyCode == 40) {
+			paddleRightDownPressed = false;
+		}
+	}
+
+	// Collision control
+
+	function collisionDetection() {
+		if (x < paddleLeftX + paddleWidth && y > paddleLeftY && y < paddleLeftY + paddleHeight) {
+			dx =- dx
+		}
+		if (x > paddleRightX - paddleWidth && y > paddleRightY && y < paddleRightY + paddleHeight) {
+			dx =- dx
+		}
+	}
+
+	// Main function
+
+	function draw() {
+
+		// Clear the canvas and redraw all objects 
+
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		drawLeftPaddle();
+		drawRightPaddle();
+		drawBall();
+		collisionDetection();
+
+		// Calculate object movement
+
+		if (paddleLeftUpPressed && paddleLeftY > 0) {
+			paddleLeftY -= 7;
+		}
+		else if (paddleLeftDownPressed && paddleLeftY < canvas.height - paddleHeight) {
+			paddleLeftY += 7;
+		}
+
+		if (paddleRightUpPressed && paddleRightY > 0) {
+			paddleRightY -= 7;
+		}
+		else if (paddleRightDownPressed && paddleRightY < canvas.height - paddleHeight) {
+			paddleRightY += 7;
+		}
+
+		// Calculate ball movement
+
+		if (x + dx < ballRadius) {
+			dx = -dx;
+		}
+		else if (x + dx > canvas.width - ballRadius) {
+			dx = -dx;
+		}
+		else if (y + dy < ballRadius) {
+			dy = -dy;
+		}
+		else if (y + dy > canvas.height - ballRadius) {
+			dy = -dy;
+		}
+
+
+		x += dx;
+		y += dy;
+
+		requestAnimationFrame(draw);
+	}
+
+	// Call main function
+
+	draw();
+
+</script>
+</body>
+</html>
